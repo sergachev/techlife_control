@@ -1,1 +1,3 @@
 .buildozer/
+local_settings.py
+*.apk
