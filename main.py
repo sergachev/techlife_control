@@ -7,7 +7,6 @@ from kivy.uix.slider import Slider
 
 from local_settings import broker_ip, device_mac
 
-
 def calc_checksum(stream):
     checksum = 0
     for i in range(1, 14):
@@ -26,6 +25,7 @@ def cmd_brightness(value):
 
 class TechlifeControl(App):
     def build(self):
+        self.prev_val = 0
         self.client = mqtt.Client()
         self.client.connect(broker_ip)
 
@@ -46,7 +46,10 @@ class TechlifeControl(App):
 
     def dim(self, *args):
         v = int(10000 * self.slider.value_normalized)
-        self.send(cmd_brightness(v))
+        if abs(v - self.prev_val) > 50:
+            self.prev_val = v
+            print(v)
+            self.send(cmd_brightness(v))
 
     def on(self, *args):
         self.send(bytearray.fromhex("fa 23 00 00 00 00 00 00 00 00 00 00 00 00 23 fb"))
